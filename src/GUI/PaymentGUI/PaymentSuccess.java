@@ -17,6 +17,21 @@ public class PaymentSuccess extends javax.swing.JPanel {
      */
     public PaymentSuccess() {
         initComponents();
+
+        jLabel2.setText("Back to Home");
+        label3.setText("Your drink is being prepared.");
+        label4.setText("Please wait for the green signal.");
+
+        receipt.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        receipt.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        receipt.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 18));
+        receipt.setBorder(javax.swing.BorderFactory.createEmptyBorder(14, 28, 14, 28));
+        add(receipt, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 462, 520, 216), 0);
+
+        countdown.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        countdown.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 18));
+        countdown.setForeground(new java.awt.Color(160, 160, 160));
+        add(countdown, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 706, 720, 28), 0);
     }
 
     /**
@@ -30,9 +45,9 @@ public class PaymentSuccess extends javax.swing.JPanel {
 
         jLabel1 = new javax.swing.JLabel();
         panelBorder1 = new GUI.PaymentGUI.Components.PanelBorder();
-        label2 = new java.awt.Label();
-        label3 = new java.awt.Label();
-        label4 = new java.awt.Label();
+        label2 = new javax.swing.JLabel();
+        label3 = new javax.swing.JLabel();
+        label4 = new javax.swing.JLabel();
         buttonConfirm = new GUI.PaymentGUI.Components.ButtonConfirm();
         jLabel2 = new javax.swing.JLabel();
 
@@ -46,16 +61,16 @@ public class PaymentSuccess extends javax.swing.JPanel {
 
         panelBorder1.setPreferredSize(new java.awt.Dimension(720, 600));
 
-        label2.setAlignment(java.awt.Label.CENTER);
+        label2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         label2.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         label2.setText("Thank you for purchasing");
 
-        label3.setAlignment(java.awt.Label.CENTER);
+        label3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         label3.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         label3.setForeground(new java.awt.Color(184, 184, 184));
         label3.setText("The product is being processed, please wait for");
 
-        label4.setAlignment(java.awt.Label.CENTER);
+        label4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         label4.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         label4.setForeground(new java.awt.Color(184, 184, 184));
         label4.setText("the green signal.");
@@ -116,13 +131,31 @@ public class PaymentSuccess extends javax.swing.JPanel {
         add(panelBorder1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 240, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
+    private final GUI.Components.RoundedLabel receipt = new GUI.Components.RoundedLabel("",
+            new java.awt.Color(248, 241, 236), new java.awt.Color(86, 71, 71), 24);
+    private final javax.swing.JLabel countdown = new javax.swing.JLabel();
+
+    /** Receipt lines as {label, value} pairs. */
+    public void setReceipt(String[][] lines) {
+        StringBuilder html = new StringBuilder("<html><table width='440' cellpadding='3'>");
+        for (String[] line : lines) {
+            html.append("<tr><td>").append(line[0]).append("</td><td align='right'><b>")
+                    .append(line[1]).append("</b></td></tr>");
+        }
+        receipt.setText(html.append("</table></html>").toString());
+    }
+
+    public javax.swing.JLabel getCountdown() {
+        return countdown;
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private GUI.PaymentGUI.Components.ButtonConfirm buttonConfirm;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private java.awt.Label label2;
-    private java.awt.Label label3;
-    private java.awt.Label label4;
+    private javax.swing.JLabel label2;
+    private javax.swing.JLabel label3;
+    private javax.swing.JLabel label4;
     private GUI.PaymentGUI.Components.PanelBorder panelBorder1;
     // End of variables declaration//GEN-END:variables
 

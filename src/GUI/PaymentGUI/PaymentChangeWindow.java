@@ -5,7 +5,6 @@
 package GUI.PaymentGUI;
 
 import GUI.PaymentGUI.Components.ButtonConfirm;
-import java.awt.Label;
 import javax.swing.JLabel;
 
 
@@ -21,6 +20,8 @@ public class PaymentChangeWindow extends javax.swing.JPanel {
      */
     public PaymentChangeWindow() {
         initComponents();
+        Change.setFont(new java.awt.Font("Tahoma", java.awt.Font.BOLD, 40));
+        Change.setForeground(new java.awt.Color(46, 125, 50));
     }
 
     /**
@@ -36,8 +37,8 @@ public class PaymentChangeWindow extends javax.swing.JPanel {
         buttonComfirm = new GUI.PaymentGUI.Components.ButtonConfirm();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        label2 = new java.awt.Label();
-        label3 = new java.awt.Label();
+        label2 = new javax.swing.JLabel();
+        label3 = new javax.swing.JLabel();
         Received = new javax.swing.JLabel();
         Change = new javax.swing.JLabel();
 
@@ -63,13 +64,13 @@ public class PaymentChangeWindow extends javax.swing.JPanel {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/icons/glasshour.png"))); // NOI18N
         panelBorder1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 208, 720, -1));
 
-        label2.setAlignment(java.awt.Label.CENTER);
+        label2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         label2.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         label2.setForeground(new java.awt.Color(161, 65, 65));
         label2.setText("Please wait for a moment ");
         panelBorder1.add(label2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 49, 720, -1));
 
-        label3.setAlignment(java.awt.Label.CENTER);
+        label3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         label3.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
         label3.setForeground(new java.awt.Color(184, 184, 184));
         label3.setName(""); // NOI18N
@@ -99,8 +100,8 @@ public class PaymentChangeWindow extends javax.swing.JPanel {
     private GUI.PaymentGUI.Components.ButtonConfirm buttonComfirm;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private java.awt.Label label2;
-    private java.awt.Label label3;
+    private javax.swing.JLabel label2;
+    private javax.swing.JLabel label3;
     private GUI.PaymentGUI.Components.PanelBorder panelBorder1;
     // End of variables declaration//GEN-END:variables
    
@@ -108,7 +109,7 @@ public class PaymentChangeWindow extends javax.swing.JPanel {
         return buttonComfirm;
     }
 
-    public Label getLabel3() {
+    public JLabel getLabel3() {
         return label3;
     }  
 

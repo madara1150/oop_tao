@@ -18,6 +18,16 @@ public class PaymentQrWindow extends javax.swing.JPanel {
      */
     public PaymentQrWindow() {
         initComponents();
+
+        total.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        total.setFont(new java.awt.Font("Tahoma", java.awt.Font.BOLD, 32));
+        total.setForeground(new java.awt.Color(86, 71, 71));
+        add(total, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 110, 720, 42), 0);
+        hint.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        hint.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 18));
+        hint.setForeground(new java.awt.Color(160, 160, 160));
+        hint.setText("Scan with your banking or wallet app, then press Pay");
+        add(hint, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 152, 720, 26), 0);
     }
 
     /**
@@ -124,6 +134,13 @@ public class PaymentQrWindow extends javax.swing.JPanel {
         add(BackButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
 
+
+    private final javax.swing.JLabel total = new javax.swing.JLabel();
+    private final javax.swing.JLabel hint = new javax.swing.JLabel();
+
+    public void setTotal(double amount) {
+        total.setText(String.format("Total : %.2f ฿", amount));
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel BackButton;

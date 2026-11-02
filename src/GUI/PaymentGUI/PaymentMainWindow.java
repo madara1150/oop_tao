@@ -8,7 +8,6 @@ import GUI.PaymentGUI.Components.Button;
 import GUI.PaymentGUI.Components.PaymentMainWindowCashButton;
 import GUI.PaymentGUI.Components.PaymentMainWindowQrCodeButton;
 import GUI.PaymentGUI.Components.PaymentMainWindowTrueButton;
-import java.awt.Label;
 import javax.swing.JLabel;
 
 /**
@@ -24,6 +23,19 @@ public class PaymentMainWindow extends javax.swing.JPanel {
      */
     public PaymentMainWindow() {
         initComponents();
+
+        // order summary: name, chosen options and total, centered under the image
+        place(ProductImg, 0, 80, 720, -1);
+        ProductName.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ProductName.setFont(new java.awt.Font("Tahoma", java.awt.Font.BOLD, 26));
+        place(ProductName, 40, 186, 640, 32);
+        details.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        details.setFont(new java.awt.Font("Tahoma", java.awt.Font.PLAIN, 18));
+        details.setForeground(new java.awt.Color(140, 120, 125));
+        place(details, 40, 218, 640, 26);
+        ProductValue.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        ProductValue.setFont(new java.awt.Font("Tahoma", java.awt.Font.BOLD, 26));
+        place(ProductValue, 40, 246, 640, 34);
     }
 
     /**
@@ -42,8 +54,8 @@ public class PaymentMainWindow extends javax.swing.JPanel {
         ButtonTrue = new GUI.PaymentGUI.Components.PaymentMainWindowTrueButton();
         ButtonCancel = new GUI.PaymentGUI.Components.Button();
         jLabel = new javax.swing.JLabel();
-        label1 = new java.awt.Label();
-        ProductName = new java.awt.Label();
+        label1 = new javax.swing.JLabel();
+        ProductName = new javax.swing.JLabel();
         ProductImg = new javax.swing.JLabel();
         ProductValue = new javax.swing.JLabel();
 
@@ -122,10 +134,10 @@ public class PaymentMainWindow extends javax.swing.JPanel {
     private GUI.PaymentGUI.Components.PaymentMainWindowQrCodeButton ButtonQrCode;
     private GUI.PaymentGUI.Components.PaymentMainWindowTrueButton ButtonTrue;
     private javax.swing.JLabel ProductImg;
-    private java.awt.Label ProductName;
+    private javax.swing.JLabel ProductName;
     private javax.swing.JLabel ProductValue;
     private javax.swing.JLabel jLabel;
-    private java.awt.Label label1;
+    private javax.swing.JLabel label1;
     private GUI.PaymentGUI.Components.PanelBorder panelBorder1;
     // End of variables declaration//GEN-END:variables
 
@@ -155,11 +167,25 @@ public class PaymentMainWindow extends javax.swing.JPanel {
         return ButtonCancel;
     }
 
+    private final javax.swing.JLabel details = new javax.swing.JLabel();
+
+    private void place(java.awt.Component c, int x, int y, int w, int h) {
+        panelBorder1.remove(c);
+        panelBorder1.add(c, new org.netbeans.lib.awtextra.AbsoluteConstraints(x, y, w, h));
+    }
+
+    /** Shows what the customer is paying for. */
+    public void setOrder(String name, String options, double total) {
+        ProductName.setText(name);
+        details.setText(options);
+        ProductValue.setText(String.format("%.2f ฿", total));
+    }
+
     public JLabel getProductImg() {
         return ProductImg;
     }
 
-    public Label getProductName() {
+    public JLabel getProductName() {
         return ProductName;
     }
 

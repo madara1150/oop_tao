@@ -10,9 +10,9 @@
 ![IDE](https://img.shields.io/badge/IDE-NetBeans-1B6AC6?logo=apachenetbeanside&logoColor=white)
 ![Course](https://img.shields.io/badge/06016317-Object--Oriented%20Programming-8A6A74)
 
-<img src="docs/screenshots/01-home.png" width="300" alt="Home screen">
-<img src="docs/screenshots/02-menu.png" width="300" alt="Menu screen">
-<img src="docs/screenshots/03-drink.png" width="300" alt="Drink options">
+<img src="docs/screenshots/01-home.png" width="260" alt="Home screen">
+<img src="docs/screenshots/03-drink.png" width="260" alt="Drink options">
+<img src="docs/screenshots/08-success.png" width="260" alt="Receipt">
 
 </div>
 
@@ -67,14 +67,18 @@
 | เลือกระดับความหวาน 0% – 100% | Choose sweetness from 0% to 100% |
 | เพิ่มท็อปปิ้งได้หลายอย่าง (อย่างละ +5฿) ตามหมวดของเครื่องดื่ม | Add toppings (+5฿ each); the choices depend on the category |
 | ราคารวมอัปเดตทันทีเมื่อเลือกตัวเลือก | The total updates as soon as an option changes |
+| หน้าชำระเงินแสดงสรุปออเดอร์ (เมนู ตัวเลือก ราคา) | The payment screen shows an order summary (drink, options, total) |
 | ชำระเงินด้วย **เงินสด** (มีทอนเงิน), **QR Code** หรือ **TrueMoney Wallet** | Pay by **cash** (with change), **QR code** or **TrueMoney Wallet** |
+| ปุ่มธนบัตร **+20 / +50 / +100 / +500 / +1000** กดเพื่อใส่เงินได้เลย | Banknote buttons **+20 / +50 / +100 / +500 / +1000** to insert cash quickly |
+| ใบเสร็จหลังชำระเงิน และกลับหน้าแรกอัตโนมัติใน 10 วินาที | A receipt after payment, then back to home automatically after 10 s |
+| ไม่มีการใช้งาน 60 วินาทีระหว่างสั่ง จะกลับหน้าแรกเอง | Returns to home after 60 s without activity in the middle of an order |
 
 ### 🛠️ ฝั่งผู้ดูแล · Admin
 
 | ฟีเจอร์ | Feature |
 |---------|---------|
-| แดชบอร์ดแสดงรายได้วันนี้ (Balance) และรายได้ทั้งหมด (Totally) | Dashboard with today's income (Balance) and all-time income (Totally) |
-| ตารางยอดขายของแต่ละเมนู (เรียงลำดับได้) | Sales table for every drink (sortable) |
+| แดชบอร์ดแสดงรายได้วันนี้ (Today) และรายได้ทั้งหมด (All time) | Dashboard with today's income and all-time income |
+| ตารางยอดขาย เรียงเมนูขายดีไว้บนสุด (คลิกหัวตารางเพื่อเรียงใหม่) | Sales table with best sellers on top (click a header to re-sort) |
 | เพิ่ม / แก้ไข / ลบ สินค้า พร้อมอัปโหลดรูป | Add / update / delete products, with image upload |
 | บันทึกข้อมูลลงไฟล์ `database.dat` อัตโนมัติ | Data is saved to `database.dat` automatically |
 
@@ -89,19 +93,24 @@
     <td align="center"><img src="docs/screenshots/03-drink.png" width="260"><br><b>ปรับแต่งเครื่องดื่ม · Customise</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/screenshots/04-payment.png" width="260"><br><b>เลือกวิธีชำระเงิน · Payment</b></td>
-    <td align="center"><img src="docs/screenshots/05-cash.png" width="260"><br><b>ใส่เงินสด · Insert cash</b></td>
-    <td align="center"><img src="docs/screenshots/06-change.png" width="260"><br><b>ทอนเงิน · Change</b></td>
+    <td align="center"><img src="docs/screenshots/04-payment.png" width="260"><br><b>สรุปออเดอร์ · Order summary</b></td>
+    <td align="center"><img src="docs/screenshots/05-qr.png" width="260"><br><b>QR Code</b></td>
+    <td align="center"><img src="docs/screenshots/06-cash.png" width="260"><br><b>ใส่เงินสด · Insert cash</b></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/screenshots/07-success.png" width="260"><br><b>ชำระเงินสำเร็จ · Success</b></td>
-    <td align="center"><img src="docs/screenshots/08-login.png" width="260"><br><b>เข้าสู่ระบบผู้ดูแล · Admin login</b></td>
-    <td align="center"><img src="docs/screenshots/09-admin.png" width="260"><br><b>แดชบอร์ด · Dashboard</b></td>
+    <td align="center"><img src="docs/screenshots/07-change.png" width="260"><br><b>ทอนเงิน · Change</b></td>
+    <td align="center"><img src="docs/screenshots/08-success.png" width="260"><br><b>ใบเสร็จ · Receipt</b></td>
+    <td align="center"><img src="docs/screenshots/09-login.png" width="260"><br><b>เข้าสู่ระบบผู้ดูแล · Admin login</b></td>
   </tr>
 </table>
 
 <p align="center">
-  <img src="docs/screenshots/10-stock.png" width="800"><br>
+  <img src="docs/screenshots/10-admin.png" width="300"><br>
+  <b>แดชบอร์ด · Dashboard</b>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/11-stock.png" width="800"><br>
   <b>จัดการสินค้า · Product management</b>
 </p>
 
@@ -153,13 +162,16 @@ Home    ─► Category  ─► Drink     ─► Options  ─► Payment  ─►
 2. คลิกเมนูที่ต้องการ · Click a drink
 3. เลือกประเภท ความหวาน และท็อปปิ้ง แล้วกด **Purchasing** · Pick type, sweetness and toppings, then click **Purchasing**
 4. เลือกวิธีชำระเงิน · Choose a payment method
-   - **Cash** — ใส่จำนวนเงิน (ต้องไม่น้อยกว่าราคา) รอนับถอยหลัง 5 วินาทีแล้วกด Continue · enter at least the price, wait for the 5-second countdown, then click Continue
-   - **QR Code / TrueMoney** — กด Confirm · click Confirm
+   - **Cash** — กดปุ่มธนบัตร (+20, +50, ...) หรือพิมพ์จำนวนเงิน แล้วกด **Pay** รอนับถอยหลัง 5 วินาทีแล้วกด **Continue** · tap banknote buttons (+20, +50, ...) or type the amount, click **Pay**, wait for the 5-second countdown, then click **Continue**
+   - **QR Code / TrueMoney** — ดูยอดที่ต้องจ่าย แล้วกด **Pay** · check the total, then click **Pay**
+5. ดูใบเสร็จ แล้วกด **Back to Home** หรือรอ 10 วินาที · Check the receipt, then click **Back to Home** or wait 10 seconds
+
+> 💡 ถ้าลูกค้าเดินออกไประหว่างสั่ง (ไม่มีการใช้งาน 60 วินาที) ตู้จะกลับหน้าแรกเอง · If a customer walks away mid-order (no activity for 60 s), the machine goes back to the home screen.
 
 ### ผู้ดูแล · Admin
 
 1. กดปุ่ม 👤 มุมขวาล่างของหน้าแรก · Click the 👤 button at the bottom right of the home screen
-2. เข้าสู่ระบบด้วยบัญชีทดลอง · Log in with the demo account:
+2. เข้าสู่ระบบด้วยบัญชีทดลอง (กด Enter ได้) · Log in with the demo account (Enter works too):
 
    | Username | Password |
    |----------|----------|
@@ -170,8 +182,8 @@ Home    ─► Category  ─► Drink     ─► Options  ─► Payment  ─►
    - **Update** — คลิกแถวในตาราง แก้ไข แล้วกด Update · select a row, edit, then click Update
    - **Delete** — คลิกแถวแล้วกด Delete · select a row, then click Delete
 
-> ℹ️ **Balance** คือรายได้ของรอบการเปิดโปรแกรมครั้งนี้ และจะเริ่มที่ 0 ทุกครั้งที่ปิดโปรแกรม ส่วน **Totally** คือรายได้สะสมทั้งหมด<br>
-> **Balance** is the income of the current run and resets to 0 when the app closes. **Totally** is the all-time income.
+> ℹ️ **Today** คือรายได้ของรอบการเปิดโปรแกรมครั้งนี้ และจะเริ่มที่ 0 ทุกครั้งที่ปิดโปรแกรม ส่วน **All time** คือรายได้สะสมทั้งหมด<br>
+> **Today** is the income of the current run and resets to 0 when the app closes. **All time** is the total income ever.
 
 ---
 
@@ -194,7 +206,7 @@ oop_tao/
     │   ├── EachDrink.java       # ปรับแต่งเครื่องดื่ม · drink options
     │   ├── PaymentGUI/          # หน้าชำระเงิน · payment screens
     │   ├── AdminUI/             # แดชบอร์ด/สต็อก · admin dashboard & stock
-    │   ├── Components/          # คอมโพเนนต์ที่ใช้ซ้ำ · reusable components
+    │   ├── Components/          # คอมโพเนนต์ที่ใช้ซ้ำ (Table, RoundedLabel, ...) · reusable components
     │   ├── MenuComponent/       # ปุ่มตัวเลือก · option buttons
     │   └── icons/               # ไอคอน · icons
     ├── internal/Login.java      # หน้าต่างเข้าสู่ระบบ · admin login

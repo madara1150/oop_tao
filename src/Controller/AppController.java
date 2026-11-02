@@ -76,6 +76,8 @@ public class AppController implements ActionListener {
     private static final int RECOMMEND_LIMIT = 6;
     private static final int TOPPING_PRICE = 5;
     private static final int CHANGE_COUNTDOWN_SECONDS = 5;
+    private static final int SUCCESS_COUNTDOWN_SECONDS = 10;
+    private static final int IDLE_TIMEOUT_MS = 60_000;
 
     // Colors
     private static final Color CATEGORY_IDLE = Color.decode("#F6E6E6");
@@ -84,6 +86,8 @@ public class AppController implements ActionListener {
     private static final Color OPTION_ACTIVE = Color.decode("#F6E6E6");
     private static final Color DRINK_CARD = Color.decode("#C59E7E");
     private static final Color DRINK_CARD_HOVER = Color.decode("#B09393");
+    private static final Color OPTION_HOVER = Color.decode("#A88A90");
+    private static final Color BACK_HOVER = Color.decode("#E8B4B4");
 
     private final DBModel db = new DBModel();
 
@@ -107,6 +111,10 @@ public class AppController implements ActionListener {
     private Product chosenProduct;
     private int typeOfDrinkPrice = 0;
     private int toppingsPrice = 0;
+    private pnlBorder selectedType;
+    private pnlBorder selectedSweetness;
+    private String paymentMethod = "";
+    private double receivedCash;
 
     // Option buttons -> their text label (and price for drink types)
     private final Map<pnlBorder, JLabel> typeButtons = new LinkedHashMap<>();
@@ -116,6 +124,8 @@ public class AppController implements ActionListener {
     private final Map<pnlBorder, Boolean> toppingSelected = new LinkedHashMap<>();
 
     private Timer changeTimer;
+    private Timer successTimer;
+    private Timer idleTimer;
 
     // Image chosen in the admin stock screen (not yet saved)
     private File sourceFile;
@@ -161,10 +171,13 @@ public class AppController implements ActionListener {
             }
         });
 
-        adminGUI.getAdminControl().getBalance().setData(new Card(balanceIcon, "  Balance.", "", "description"));
-        adminGUI.getAdminControl().getTotally().setData(new Card(totalIcon, "  Totally.", "", "description"));
+        adminGUI.getAdminControl().getBalance().setData(new Card(balanceIcon, "  Today.", "", "description"));
+        adminGUI.getAdminControl().getTotally().setData(new Card(totalIcon, "  All time.", "", "description"));
+        adminGUI.getAdminControl().getTable().setNumericColumns(0);
         refreshAdminDashboard();
+        startIdleWatcher();
 
+        mw.setTitle("TAO NGOI - Drink Vending Machine");
         mw.setVisible(true);
     }
 
@@ -201,6 +214,27 @@ public class AppController implements ActionListener {
         typeButtons.keySet().forEach(btn -> onClick(btn, () -> chooseTypeOfDrink(btn)));
         sweetnessButtons.keySet().forEach(btn -> onClick(btn, () -> chooseSweetnessLevel(btn)));
         toppingButtons.keySet().forEach(btn -> onClick(btn, () -> toggleTopping(btn)));
+
+        // light up option buttons that are not selected when the mouse is over them
+        for (Map<pnlBorder, JLabel> group : List.of(typeButtons, sweetnessButtons, toppingButtons)) {
+            for (pnlBorder btn : group.keySet()) {
+                btn.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        if (btn.getBackground().equals(OPTION_IDLE)) {
+                            btn.setBackground(OPTION_HOVER);
+                        }
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        if (btn.getBackground().equals(OPTION_HOVER)) {
+                            btn.setBackground(OPTION_IDLE);
+                        }
+                    }
+                });
+            }
+        }
     }
 
     private void addType(pnlBorder btn, JLabel text, int price) {
@@ -210,7 +244,11 @@ public class AppController implements ActionListener {
 
     private void registerNavigation() {
         // Home screen
-        onClick(mw.getPnlLogin(), () -> login.setVisible(true));
+        onClick(mw.getPnlLogin(), () -> {
+            login.setVisible(true);
+            login.getTfUsername().requestFocusInWindow();
+        });
+        mw.getPnlLogin().setToolTipText("Admin login");
         onClick(mw.getPnlRecommend(), () -> chooseProduct(RECOMMEND));
         onClick(mw.getPnlCoffee(), () -> chooseProduct("Coffee"));
         onClick(mw.getPnlTea(), () -> chooseProduct("Tea"));
@@ -224,6 +262,9 @@ public class AppController implements ActionListener {
             }
         });
         login.getBtnLogin().addActionListener(this);
+        // press Enter in either field to log in
+        login.getTfUsername().addActionListener(e -> login.getBtnLogin().doClick());
+        login.getjPasswordField1().addActionListener(e -> login.getBtnLogin().doClick());
 
         // Menu
         onClick(menu.getBackButton(), () -> show(mw.getPnlContainer()));
@@ -242,24 +283,33 @@ public class AppController implements ActionListener {
         onClick(paymentmain.getBackButton(), () -> show(eachdrink));
         onClick(paymentmain.getButtonCancel(), () -> show(eachdrink));
         onClick(paymentmain.getButtonCash(), () -> {
+            paymentMethod = "Cash";
             paymentinsert.getTotal().setText(String.format("Total : %.2f ฿", currentTotal()));
             show(paymentinsert);
         });
-        onClick(paymentmain.getButtonQrCode(), () -> show(paymentqr));
-        onClick(paymentmain.getButtonTrue(), () -> show(paymentqr));
+        onClick(paymentmain.getButtonQrCode(), () -> showQr("QR Code"));
+        onClick(paymentmain.getButtonTrue(), () -> showQr("TrueMoney Wallet"));
 
         // QR code / TrueMoney
         onClick(paymentqr.getBackButton(), () -> show(paymentmain));
         onClick(paymentqr.getButtonCancel(), () -> show(paymentmain));
         onClick(paymentqr.getButtonConfirm(), () -> {
+            receivedCash = 0;
             recordSale();
-            show(paymentsuccess);
+            showSuccess();
         });
 
         // Cash
         onClick(paymentinsert.getBackButton(), () -> show(paymentmain));
         onClick(paymentinsert.getButtonCancel(), () -> show(paymentmain));
         onClick(paymentinsert.getButtonConfirm(), this::confirmCashPayment);
+        for (JComponent note : paymentinsert.getQuickAmountButtons()) {
+            int amount = (int) note.getClientProperty("amount");
+            onClick(note, () -> insertCash(amount));
+            hover(note, "#E8C9C9", "#F6E6E6");
+        }
+        onClick(paymentinsert.getClearButton(), () -> paymentinsert.getTextInsert().setText(""));
+        hover(paymentinsert.getClearButton(), "#D0D0D0", "#E6E6E6");
         paymentinsert.getTextInsert().addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
@@ -288,12 +338,20 @@ public class AppController implements ActionListener {
             // the button is a panel, so "disabled" does not block mouse events
             if (paymentchange.getButtonConfirm().isEnabled()) {
                 recordSale();
-                show(paymentsuccess);
+                showSuccess();
             }
         });
 
         // Success
         onClick(paymentsuccess.getButtonConfirm(), () -> show(mw.getPnlContainer()));
+        paymentsuccess.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                if (successTimer != null) {
+                    successTimer.stop();
+                }
+            }
+        });
 
         // Admin
         onClick(adminGUI.getNavbar().getBackButton(), () -> show(mw.getPnlContainer()));
@@ -315,6 +373,21 @@ public class AppController implements ActionListener {
         hover(paymentinsert.getButtonCancel(), "#9F5151", "#A32B2B");
         hover(paymentinsert.getButtonConfirm(), "#DAC1AC", "#C59E7E");
         hover(paymentsuccess.getButtonConfirm(), "#DAC1AC", "#C59E7E");
+        for (JLabel back : Arrays.asList(menu.getBackButton(), eachdrink.getBackButton(), paymentmain.getBackButton(),
+                paymentqr.getBackButton(), paymentinsert.getBackButton(), adminGUI.getNavbar().getBackButton())) {
+            Color normal = back.getForeground();
+            back.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    back.setForeground(BACK_HOVER);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    back.setForeground(normal);
+                }
+            });
+        }
         paymentchange.getButtonConfirm().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -411,7 +484,16 @@ public class AppController implements ActionListener {
             });
             menu.getPnlMenu().add(card);
         }
-        menu.getPnlMenu().setPreferredSize(new Dimension(720, (int) (Math.ceil(drinks.size() / 3.0) * 280)));
+        if (drinks.isEmpty()) {
+            JLabel empty = new JLabel(category.equals(RECOMMEND)
+                    ? "<html><center>No best sellers yet.<br>Pick a category and be the first!</center></html>"
+                    : "No drinks in this category yet.", JLabel.CENTER);
+            empty.setFont(empty.getFont().deriveFont(java.awt.Font.BOLD, 24f));
+            empty.setForeground(Color.WHITE);
+            empty.setPreferredSize(new Dimension(680, 300));
+            menu.getPnlMenu().add(empty);
+        }
+        menu.getPnlMenu().setPreferredSize(new Dimension(720, (int) (Math.max(1, Math.ceil(drinks.size() / 3.0)) * 280)));
         menu.getPnlMenu().revalidate();
         menu.getPnlMenu().repaint();
         menu.getjScrollPane().getVerticalScrollBar().setValue(0);
@@ -476,12 +558,14 @@ public class AppController implements ActionListener {
     }
 
     private void chooseTypeOfDrink(pnlBorder selected) {
+        selectedType = selected;
         typeOfDrinkPrice = typePrices.get(selected);
         typeButtons.forEach((btn, text) -> paintOption(btn, text, btn == selected));
         updatePriceLabel();
     }
 
     private void chooseSweetnessLevel(pnlBorder selected) {
+        selectedSweetness = selected;
         sweetnessButtons.forEach((btn, text) -> paintOption(btn, text, btn == selected));
         eachdrink.repaint();
     }
@@ -511,9 +595,99 @@ public class AppController implements ActionListener {
 
     private void goToPayment() {
         paymentmain.getProductImg().setIcon(ProductImages.load(choose.getImg()));
-        paymentmain.getProductName().setText(choose.getProductName());
-        paymentmain.getProductValue().setText(String.format("%.2f ฿", currentTotal()));
+        paymentmain.setOrder(choose.getProductName(), orderDetails(), currentTotal());
         show(paymentmain);
+    }
+
+    /** e.g. "Iced · Sweetness 50% · Whip cream, Milk Foam" */
+    private String orderDetails() {
+        StringBuilder sb = new StringBuilder();
+        if (selectedType != null) {
+            // "Iced(+฿5)" -> "Iced"
+            sb.append(typeButtons.get(selectedType).getText().replaceAll("\\(.*\\)", "").trim());
+        }
+        if (selectedSweetness != null) {
+            sb.append(" · Sweetness ").append(sweetnessButtons.get(selectedSweetness).getText().trim());
+        }
+        String toppings = toppingSelected.entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .map(e -> toppingButtons.get(e.getKey()).getText().trim())
+                .collect(Collectors.joining(", "));
+        if (!toppings.isEmpty()) {
+            sb.append(" · ").append(toppings);
+        }
+        return sb.toString();
+    }
+
+    private void showQr(String method) {
+        paymentMethod = method;
+        paymentqr.setTotal(currentTotal());
+        show(paymentqr);
+    }
+
+    /** Adds a banknote to the amount typed in the cash screen. */
+    private void insertCash(int amount) {
+        long current = 0;
+        try {
+            current = Long.parseLong(paymentinsert.getTextInsert().getText().trim());
+        } catch (NumberFormatException ignored) {
+        }
+        paymentinsert.getTextInsert().setText(String.valueOf(current + amount));
+    }
+
+    /** Shows the receipt and goes back home by itself after a few seconds. */
+    private void showSuccess() {
+        double total = currentTotal();
+        List<String[]> lines = new ArrayList<>();
+        lines.add(new String[]{choose.getProductName(), String.format("%.2f ฿", choose.getPrice())});
+        String details = orderDetails();
+        if (typeOfDrinkPrice + toppingsPrice > 0) {
+            lines.add(new String[]{"Extras", String.format("+%d ฿", typeOfDrinkPrice + toppingsPrice)});
+        }
+        lines.add(new String[]{"<font color='#8C787D'>" + details + "</font>", ""});
+        lines.add(new String[]{"Total", String.format("%.2f ฿", total)});
+        lines.add(new String[]{"Paid by", paymentMethod});
+        if (receivedCash > 0) {
+            lines.add(new String[]{"Change", String.format("%.2f ฿", receivedCash - total)});
+        }
+        paymentsuccess.setReceipt(lines.toArray(new String[0][]));
+        show(paymentsuccess);
+
+        if (successTimer != null) {
+            successTimer.stop();
+        }
+        int[] secondsLeft = {SUCCESS_COUNTDOWN_SECONDS};
+        paymentsuccess.getCountdown().setText("Returning to home in " + secondsLeft[0] + " s");
+        successTimer = new Timer(1000, e -> {
+            secondsLeft[0]--;
+            if (secondsLeft[0] > 0) {
+                paymentsuccess.getCountdown().setText("Returning to home in " + secondsLeft[0] + " s");
+            } else {
+                successTimer.stop();
+                show(mw.getPnlContainer());
+            }
+        });
+        successTimer.start();
+    }
+
+    /**
+     * Goes back to the home screen when a customer walks away in the middle of
+     * an order. Not used on the change/receipt screens (money is involved) or
+     * in the admin pages.
+     */
+    private void startIdleWatcher() {
+        idleTimer = new Timer(IDLE_TIMEOUT_MS, e -> {
+            for (JComponent screen : Arrays.asList(menu, eachdrink, paymentmain, paymentinsert, paymentqr)) {
+                if (screen.isVisible()) {
+                    show(mw.getPnlContainer());
+                    return;
+                }
+            }
+        });
+        idleTimer.setRepeats(false);
+        java.awt.Toolkit.getDefaultToolkit().addAWTEventListener(e -> idleTimer.restart(),
+                java.awt.AWTEvent.MOUSE_EVENT_MASK | java.awt.AWTEvent.MOUSE_MOTION_EVENT_MASK | java.awt.AWTEvent.KEY_EVENT_MASK);
+        idleTimer.start();
     }
 
     private void confirmCashPayment() {
@@ -531,6 +705,7 @@ public class AppController implements ActionListener {
                     "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        receivedCash = received;
         paymentchange.getReceived().setText(String.format("Received amount : %.2f ฿", received));
         paymentchange.getChange().setText(String.format("Change : %.2f ฿", received - total));
         show(paymentchange);
@@ -629,6 +804,10 @@ public class AppController implements ActionListener {
         for (Product p : db.getProducts()) {
             table.getTableModel().addRow(new Object[]{p.getPopulation(), p.getImg(), p.getProductName(), p.getCategory()});
         }
+        // best sellers on top
+        if (table.getRowSorter() != null) {
+            table.getRowSorter().setSortKeys(List.of(new javax.swing.RowSorter.SortKey(0, javax.swing.SortOrder.DESCENDING)));
+        }
     }
 
     private void openStockWindow() {
@@ -636,7 +815,9 @@ public class AppController implements ActionListener {
             stock.dispose();
         }
         stock = new AdminStock();
+        stock.setTitle("TAO NGOI - Products");
         AdminProducts form = stock.getAdminProducts();
+        form.getTable().setNumericColumns(0, 3);
         form.getBtnAdd().addActionListener(this);
         form.getBtnUpdate().addActionListener(this);
         form.getBtnDelete().addActionListener(this);
@@ -702,7 +883,7 @@ public class AppController implements ActionListener {
         db.saveFile();
 
         form.getTable().getTableModel().addRow(productRow(p));
-        clearImageSelection(form);
+        clearForm(form);
         refreshAdminDashboard();
     }
 
@@ -757,6 +938,7 @@ public class AppController implements ActionListener {
         db.removeById(id);
         db.saveFile();
         table.getTableModel().removeRow(modelRow);
+        clearForm(form);
         refreshAdminDashboard();
     }
 
@@ -775,6 +957,13 @@ public class AppController implements ActionListener {
         sourceFile = null;
         fName = "";
         form.getLblFile().setText("");
+    }
+
+    private void clearForm(AdminProducts form) {
+        form.getTfName().setText("");
+        form.getTfPrice().setText("");
+        form.getTable().clearSelection();
+        clearImageSelection(form);
     }
 
     /** Copies the chosen image into src/products so the menu can show it. */

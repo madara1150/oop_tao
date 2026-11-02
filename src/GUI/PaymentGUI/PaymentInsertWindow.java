@@ -5,7 +5,6 @@
 package GUI.PaymentGUI;
 
 import GUI.PaymentGUI.Components.ButtonConfirm;
-import java.awt.Label;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
@@ -20,6 +19,35 @@ public class PaymentInsertWindow extends javax.swing.JPanel {
      */
     public PaymentInsertWindow() {
         initComponents();
+
+        TextInsert.setBackground(java.awt.Color.WHITE);
+        TextInsert.setFont(new java.awt.Font("Tahoma", java.awt.Font.BOLD, 28));
+        TextInsert.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                javax.swing.BorderFactory.createLineBorder(new java.awt.Color(197, 158, 126), 2, true),
+                javax.swing.BorderFactory.createEmptyBorder(4, 8, 4, 8)));
+
+        // the heading moves to the empty space at the top...
+        javax.swing.JLabel heading = new javax.swing.JLabel(label3.getText(), javax.swing.SwingConstants.CENTER);
+        heading.setFont(label3.getFont());
+        heading.setForeground(label3.getForeground());
+        add(heading, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 118, 720, 64), 0);
+
+        // ...and its slot holds banknote buttons: tap to "insert" money like a real machine
+        label3.setText("");
+        label3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 2));
+        label3.setPreferredSize(new java.awt.Dimension(700, 50));
+        for (int amount : QUICK_AMOUNTS) {
+            GUI.Components.RoundedLabel note = new GUI.Components.RoundedLabel("+" + amount,
+                    new java.awt.Color(246, 230, 230), new java.awt.Color(86, 71, 71), 20, new java.awt.Dimension(100, 46));
+            note.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+            note.setToolTipText("Insert a " + amount + " baht note");
+            note.putClientProperty("amount", amount);
+            quickAmountButtons.add(note);
+            label3.add(note);
+        }
+        clearButton.setPreferredSize(new java.awt.Dimension(100, 46));
+        clearButton.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        label3.add(clearButton);
     }
 
     /**
@@ -37,7 +65,7 @@ public class PaymentInsertWindow extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         ButtonConfirm = new GUI.PaymentGUI.Components.ButtonConfirm();
         jLabel2 = new javax.swing.JLabel();
-        label3 = new java.awt.Label();
+        label3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         TextInsert = new javax.swing.JTextField();
         total = new javax.swing.JLabel();
@@ -100,7 +128,7 @@ public class PaymentInsertWindow extends javax.swing.JPanel {
             .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
         );
 
-        label3.setAlignment(java.awt.Label.CENTER);
+        label3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         label3.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
         label3.setForeground(new java.awt.Color(161, 65, 65));
         label3.setText("Please insert money");
@@ -165,10 +193,23 @@ public class PaymentInsertWindow extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private java.awt.Label label3;
+    private javax.swing.JLabel label3;
     private GUI.PaymentGUI.Components.PanelBorder panelBorder1;
     private javax.swing.JLabel total;
     // End of variables declaration//GEN-END:variables
+
+    public static final int[] QUICK_AMOUNTS = {20, 50, 100, 500, 1000};
+    private final java.util.List<GUI.Components.RoundedLabel> quickAmountButtons = new java.util.ArrayList<>();
+    private final GUI.Components.RoundedLabel clearButton = new GUI.Components.RoundedLabel("Clear",
+            new java.awt.Color(230, 230, 230), new java.awt.Color(120, 120, 120), 20);
+
+    public java.util.List<GUI.Components.RoundedLabel> getQuickAmountButtons() {
+        return quickAmountButtons;
+    }
+
+    public GUI.Components.RoundedLabel getClearButton() {
+        return clearButton;
+    }
 
     public JLabel getBackButton() {
         return BackButton;
