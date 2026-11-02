@@ -19,7 +19,6 @@ public class pnlStock extends javax.swing.JPanel{
     }
     public void sendData(Stock data){
         lbl_Values.setText(String.valueOf(data.getItems()));
-                System.err.println(lbl_Values.getText());
 
     }
     @SuppressWarnings("unchecked")

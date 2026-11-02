@@ -1,16 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Model;
 
 import java.io.Serializable;
 
 /**
- *
- * @author admin
+ * Money received by the machine.
+ * balance = income of the current run (reset when the app closes),
+ * totally = income of all time.
  */
-public class Finance implements Serializable{
+public class Finance implements Serializable {
+
+    // keeps database.dat files created by older versions readable
+    private static final long serialVersionUID = -5300355170956067267L;
+
     private double balance;
     private double totally;
     

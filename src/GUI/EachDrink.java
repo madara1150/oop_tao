@@ -24,7 +24,7 @@ public class EachDrink extends javax.swing.JPanel {
         initComponents();
     }
     public void set(String icon, String name, String category, double price){
-        this.image.setIcon(new ImageIcon(getClass().getResource(String.format("/products/%s", icon))));
+        this.image.setIcon(util.ProductImages.load(icon));
         this.name.setText(name);
         this.purchasingButton.getPriceText().setText(String.format("Purchasing | %.2f ฿", price));
     }

@@ -22,7 +22,15 @@ public class AdminProducts extends javax.swing.JPanel implements ActionListener 
         initComponents();
         setOpaque(false);
         setBackground(Color.WHITE);
-        
+
+        // some look and feels (e.g. macOS) ignore the button background, which
+        // makes the white text invisible, so paint the background ourselves
+        for (javax.swing.JButton b : new javax.swing.JButton[]{btnAdd, btnUpdate, btnDelete, btnImage}) {
+            b.setOpaque(true);
+            b.setBorderPainted(false);
+            b.setFocusPainted(false);
+        }
+
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.LEFT);
         
